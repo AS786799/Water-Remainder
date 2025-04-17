@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet"href="style.css">
+</head>
+<body>
+  
+</body>
+</html><body>
+
+  <div class="container">
+    <h2>💧 Water Intake Based on BMI</h2>
+
+    <label for="weight">Weight (kg):</label>
+    <input type="number" id="weight" placeholder="e.g., 70">
+
+    <label for="height">Height (cm):</label>
+    <input type="number" id="height" placeholder="e.g., 175">
+
+    <label for="drank">Already Drank Water (ml):</label>
+    <input type="number" id="drank" placeholder="e.g., 800">
+
+    <button onclick="calculate()">Calculate</button>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    function calculate() {
+      const weight = parseFloat(document.getElementById("weight").value);
+      const height = parseFloat(document.getElementById("height").value);
+      const drank = parseFloat(document.getElementById("drank").value) || 0;
+      const resultDiv = document.getElementById("result");
+
+      if (!weight || !height || weight <= 0 || height <= 0) {
+        resultDiv.innerHTML = "❗ Please enter valid weight and height.";
+        return;
+      }
+
+      const heightM = height / 100;
+      const bmi = weight / (heightM * heightM);
+      let waterPerKg = bmi < 18.5 ? 30 : (bmi > 25 ? 40 : 35);
+
+      const totalWaterMl = weight * waterPerKg;
+      const totalWaterL = (totalWaterMl / 1000).toFixed(2);
+      const remainingWaterMl = Math.max(totalWaterMl - drank, 0);
+      const remainingWaterL = (remainingWaterMl / 1000).toFixed(2);
+
+      const waterPerHour = Math.floor(totalWaterMl / 24); 
+
+      
+      let html = `
+        <strong>BMI:</strong> ${bmi.toFixed(1)}<br>
+        <strong>Total Recommended Water:</strong> ${totalWaterL} L (${totalWaterMl} ml)<br>
+        <strong>Already Drank:</strong> ${drank} ml<br>
+        <strong>Remaining:</strong> ${remainingWaterL} L (${remainingWaterMl} ml)<br><br>
+        <strong>💧 Hourly Water Intake Plan (Based on Total Needed):</strong><br>
+        <table>
+          <tr>
+            <th>Time</th>
+            <th>Target Intake</th>
+          </tr>`;
+
+      for (let i = 0; i < 24; i++) {
+        let hour12 = i % 12 === 0 ? 12 : i % 12;
+        let ampm = i < 12 ? 'AM' : 'PM';
+        let timeLabel = `${hour12}:00 ${ampm}`;
+        html += `<tr><td>${timeLabel}</td><td>${waterPerHour} ml</td></tr>`;
+      }
+
+      html += "</table>";
+      resultDiv.innerHTML = html;
+    }
+  </script>
+</body>
+</html>
